@@ -1,6 +1,6 @@
 from aws_cdk import Stack, App
-from aws_cdk.aws_lambda_event_sources import S3EventSource
 from aws_cdk.aws_s3 import Bucket, EventType
+from aws_cdk.aws_s3_notifications import LambdaDestination
 from constructs import Construct
 from shared_infrastructure import create_function, get_stack_output
 from shared_infrastructure.function import Allow
@@ -31,20 +31,8 @@ class MatchProcessorStack(Stack):
 
 		data_lake_bucket = Bucket.from_bucket_name(self, 'data-lake-bucket', data_lake_bucket_name)
 
-		process_match.add_event_source(
-			S3EventSource(
-				data_lake_bucket,
-				events=[
-					EventType.OBJECT_CREATED
-				],
-				filters=[
-					{
-						'prefix': 'raw/',
-						'suffix': '.json.gzip'
-					}
-				]
-			)
-		)
+		data_lake_bucket.add_event_notification(EventType.OBJECT_CREATED, LambdaDestination(process_match),
+												prefix='raw/', suffix='.json.gzip')
 
 
 if __name__ == '__main__':
