@@ -1,7 +1,40 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from src.data_lake import DataLakeItem
+from src.data_lake import DataLakeItem, DataLake
+
+
+@dataclass
+class Match(DataLakeItem):
+	id: int
+	league_id: int
+	season: int
+	date: str
+	home_id: int
+	home_score: int
+	away_id: int
+	away_score: int
+
+	def get_key(self) -> str:
+		return f'matches/league_id={self.league_id}/season={self.season}/id={self.id}.json'
+
+
+@dataclass
+class Player(DataLakeItem):
+	id: int
+	name: str
+	team_id: int
+	is_gk: bool
+	as_of_date: str
+
+	def get_key(self) -> str:
+		return f'players/id={self.id}.json'
+
+	def should_save(self, data_lake: DataLake) -> bool:
+		existing_player = data_lake.get(self.get_key(), Player)
+		if not existing_player:
+			return True
+		return self.as_of_date > existing_player.as_of_date
 
 
 @dataclass
@@ -19,39 +52,12 @@ class RosterPlayer(DataLakeItem):
 	subbed_in_half: Optional[int]
 	subbed_in_expanded_minute: Optional[int]
 
-	def _get_key(self) -> str:
+	def get_key(self) -> str:
 		return f'rosters/league_id={self.league_id}/season={self.season}/match_id={self.match_id}.jsonl'
 
 	@staticmethod
 	def _hidden_keys() -> List[str]:
 		return ['league_id', 'season']
-
-
-@dataclass
-class Match(DataLakeItem):
-	id: int
-	league_id: int
-	season: int
-	date: str
-	home_id: int
-	home_score: int
-	away_id: int
-	away_score: int
-
-	def _get_key(self) -> str:
-		return f'matches/league_id={self.league_id}/season={self.season}/id={self.id}.json'
-
-
-@dataclass
-class Player(DataLakeItem):
-	id: int
-	name: str
-	team_id: int
-	is_gk: bool
-	as_of_date: str
-
-	def _get_key(self) -> str:
-		return f'players/id={self.id}.json'
 
 
 @dataclass
@@ -83,7 +89,7 @@ class Event(DataLakeItem):
 	related_player_id: Optional[int]
 	is_successful: Optional[bool]
 
-	def _get_key(self) -> str:
+	def get_key(self) -> str:
 		return f'events/league_id={self.league_id}/season={self.season}/match_id={self.match_id}.jsonl'
 
 	@staticmethod
@@ -96,5 +102,8 @@ class EventType(DataLakeItem):
 	id: int
 	description: str
 
-	def _get_key(self) -> str:
+	def get_key(self) -> str:
 		return f'event_types/id={self.id}.json'
+
+	def should_save(self, data_lake: DataLake) -> bool:
+		return not data_lake.exists(self.get_key())
