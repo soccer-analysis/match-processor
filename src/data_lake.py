@@ -3,7 +3,7 @@ import dataclasses
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from functools import reduce
-from typing import List, Dict, Tuple, Any, Callable, Type, TypeVar, Optional
+from typing import List, Dict, Tuple, Any, Callable, TypeVar, Optional
 
 import boto3
 import botocore
