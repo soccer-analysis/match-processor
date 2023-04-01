@@ -4,3 +4,6 @@ install:
 
 deploy:
 	cdk deploy --require-approval never
+
+local:
+	pipenv run python -m src.process_match
