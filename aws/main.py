@@ -31,7 +31,7 @@ class MatchProcessorStack(Stack):
 			]
 		)
 
-		data_lake_bucket = Bucket.from_bucket_name(scope, 'data-lake-bucket', data_lake_bucket_name)
+		data_lake_bucket = Bucket.from_bucket_name(self, 'data-lake-bucket', data_lake_bucket_name)
 
 		process_match.add_event_source(
 			S3EventSource(
