@@ -49,7 +49,7 @@ def process(raw: dict) -> None:
 	match = get_match(raw)
 	data_lake_items.append(match)
 	data_lake_items.extend(get_players(raw, match))
-	data_lake.save(data_lake_items)
+	data_lake.persist(data_lake_items)
 
 
 def unzip(bucket: str, key: str) -> dict:
