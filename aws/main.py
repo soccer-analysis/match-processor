@@ -1,5 +1,3 @@
-from typing import cast
-
 from aws_cdk import Stack, App
 from aws_cdk.aws_lambda_event_sources import S3EventSource
 from aws_cdk.aws_s3 import Bucket, EventType
@@ -35,7 +33,7 @@ class MatchProcessorStack(Stack):
 
 		process_match.add_event_source(
 			S3EventSource(
-				cast(Bucket, data_lake_bucket),
+				data_lake_bucket,
 				events=[
 					EventType.OBJECT_CREATED
 				],
