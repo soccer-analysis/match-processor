@@ -1,5 +1,5 @@
 from aws_cdk import Stack, App
-from aws_cdk.aws_s3 import Bucket, EventType
+from aws_cdk.aws_s3 import Bucket, EventType, NotificationKeyFilter
 from aws_cdk.aws_s3_notifications import LambdaDestination
 from constructs import Construct
 from shared_infrastructure import create_function, get_stack_output
@@ -32,7 +32,7 @@ class MatchProcessorStack(Stack):
 		data_lake_bucket = Bucket.from_bucket_name(self, 'data-lake-bucket', data_lake_bucket_name)
 
 		data_lake_bucket.add_event_notification(EventType.OBJECT_CREATED, LambdaDestination(process_match),
-												prefix='raw/', suffix='.json.gzip')
+												NotificationKeyFilter(prefix='raw/', suffix='.json.gzip'))
 
 
 if __name__ == '__main__':
