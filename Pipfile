@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+python-dotenv = "*"
+boto3 = "*"
+tqdm = "*"
+ujson = "*"
+unidecode = "*"
+json5 = "*"
+
+[dev-packages]
+aws-cdk-lib = "*"
+shared-infrastructure = {editable = true, git = "https://github.com/soccer-analysis/shared-infrastructure.git"}
+
+[requires]
+python_version = "3.9"
