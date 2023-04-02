@@ -138,4 +138,4 @@ def lambda_handler(event: Dict = None, context: Any = None) -> None:
 
 
 if __name__ == '__main__':
-	process(unzip(DATA_LAKE_BUCKET, 'raw/1643222.json.gzip'))
+	process(unzip(DATA_LAKE_BUCKET, 'raw/1643759.json.gzip'))
