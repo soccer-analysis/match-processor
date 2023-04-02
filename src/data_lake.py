@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import dataclasses
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -52,6 +53,15 @@ class DataLake:
 		self.__bucket = self.__resource.Bucket(DATA_LAKE_BUCKET)
 		self.__client = boto3.client('s3')
 
+	def persist(self, items: List[DataLakeItem]) -> None:
+		key_items_map: Dict[str, List[DataLakeItem]] = {}
+		for item in items:
+			key = item.get_key()
+			key_items_map[key] = key_items_map.get(key, []) + [item]
+		with ThreadPoolExecutor() as x:
+			for future in as_completed([x.submit(self.__save, t) for t in key_items_map.items()]):
+				future.result()
+
 	def exists(self, key: str) -> bool:
 		try:
 			self.__client.head_object(Bucket=DATA_LAKE_BUCKET, Key=key)
@@ -70,15 +80,8 @@ class DataLake:
 				return None
 			raise e
 
-	def persist(self, items: List[DataLakeItem]) -> None:
-		key_items_map: Dict[str, List[DataLakeItem]] = {}
-		for item in items:
-			key = item.get_key()
-			key_items_map[key] = key_items_map.get(key, []) + [item]
-		for key, items in key_items_map.items():
-			self.__save(key, items)
-
-	def __save(self, key: str, items: List[DataLakeItem]) -> None:
+	def __save(self, key_items: Tuple[str, List[DataLakeItem]]) -> None:
+		key, items = key_items
 		if any(not x.should_save(self) for x in items):
 			print(f'Not saving {key}')
 			return
