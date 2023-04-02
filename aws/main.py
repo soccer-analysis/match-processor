@@ -23,7 +23,7 @@ class MatchProcessorStack(Stack):
 			reserved_concurrent_executions=100,
 			allows=[
 				Allow(
-					actions=['s3:GetObject', 's3:ListBucket'],
+					actions=['s3:GetObject', 's3:ListBucket', 's3:PutObject'],
 					resources=[data_lake_bucket_arn, f'{data_lake_bucket_arn}/*']
 				)
 			]
